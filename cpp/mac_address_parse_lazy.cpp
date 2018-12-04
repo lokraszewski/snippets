@@ -1,20 +1,23 @@
+#include <cstring>
 #include <iostream>
-#include <sstream>
 #include <vector>
 
-using namespace std;
-vector<int> mac_parse(std::string s)
+std::vector<int> mac_parse(const std::string &s)
 {
+
   auto constexpr mac_len = 6;
-  vector<int> r;
-  r.reserve(mac_len);
-  std::stringstream ss(s);
+  std::vector<int> r;
+
+  char *pend = const_cast<char *>(s.c_str());
+
   for (auto i = mac_len; i--;)
   {
-    int  byte;
-    char seperator;
-    ss >> std::hex >> byte >> seperator;
-    r.push_back(byte);
+    while (*pend && isalnum(*pend) == false) ++pend;
+
+    if (!*pend)
+      return r;
+
+    r.push_back(strtol(pend, &pend, 16));
   }
   return r;
 }
@@ -22,13 +25,15 @@ vector<int> mac_parse(std::string s)
 int main()
 {
 
-  std::vector<std::string> input = {"bc fb 81 8e ac 10 42 01", "0xbc 0xfb 0x81 0x8e 0xac 0x10 0x42 0x01", "bc:fb:81:8e:ac:10:42:01"};
-
+  std::vector<std::string> input = {"    : : }{  }", "0xbc 0xfb 0x81 0x8e 0xac 0x10 0x42 0x01", "bc:fb:81:8e:ac:10:42:01",
+                                    "bc  fb           81 8e               ac 10 42 01", "bc:fb:81:"};
+  std::cout << std::hex;
   for (auto mac : input)
   {
     for (auto e : mac_parse(mac))
     {
-      std::cout << std::hex << e << std::endl;
+      std::cout << e << ' ';
     }
+    std::cout << std::endl;
   }
 }
