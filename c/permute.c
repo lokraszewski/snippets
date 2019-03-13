@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 void swap(int* const x, int* const y)
 {
@@ -36,11 +37,30 @@ void permute(int* arr, int st, int ls)
 
 int main(int argc, char const* argv[])
 {
-  int          arr[]    = {0, 1, 2, 3};
-  const size_t arr_size = sizeof(arr) / sizeof(arr[0]);
-  permute(arr, 0, arr_size);
-  printf("Original: ");
-  print_arr(arr, arr_size);
+  srand(time(NULL));
+
+  for (size_t i = 0; i < argc; i++) printf("%s\n", argv[i]);
+
+  size_t arr_size = 4;
+  if (argc >= 2)
+    arr_size = atoi(argv[1]);
+
+  printf("create array of size: %zu : ", arr_size);
+
+  int* array = malloc(arr_size);
+
+  if (array == NULL)
+  {
+    printf("ERROR: out of memory");
+    return -1;
+  }
+
+  for (size_t i = 0; i < arr_size; i++) array[i] = rand();
+
+  print_arr(array, arr_size);
+  permute(array, 0, arr_size);
+
+  free(array);
 
   return 0;
 }
